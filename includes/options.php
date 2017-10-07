@@ -39,10 +39,10 @@ function notify_ninja_options_page() {
     	    </tr>
 
     	    <tr valign="top">
-    		<th scope="row">Ninja Forms - Phone Number Field Key or Static phone number</th>
+    		<th scope="row">Ninja Forms - Phone Number Field Key</th>
     		<td>
 		    <input type="text" class="regular-text" name="notify_ninja_key_phone" value="<?php echo esc_attr(get_option('notify_ninja_key_phone')); ?>" />
-		    <p class="description">If you need to send SMS to form filled phone number enter field key as a shortcode. Eg: [phone_12412321]<br>If you need to receive a SMS to yourself add the phone number. Eg: 94777123456</p>
+		    <p class="description">Eg: phone_12412321</p>
 		</td>
     	    </tr>	
 
