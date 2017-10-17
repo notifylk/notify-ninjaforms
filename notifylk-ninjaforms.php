@@ -69,3 +69,46 @@ function notifyReformatPhoneNumbers($value) {
     }
     return $number;
 }
+
+/*
+ *
+ * Ninja Forms Custom Field
+ *
+ */
+
+
+function notifyNinjaTemplatePaths( $paths ){
+  $paths[] = plugin_dir_path( __FILE__ ) . "includes/templates/";  
+  return $paths;
+}
+add_filter( 'ninja_forms_field_template_file_paths', 'notifyNinjaTemplatePaths');
+
+class NotifyNinjaPhoneField extends NF_Abstracts_Input{
+    protected $_name = 'notify_ninja_phone';
+    protected $_type = 'notify_phone';
+    protected $_nicename = 'Phone Number - Notify.Lk';
+    protected $_section = 'userinfo';
+    protected $_icon = 'phone';
+    protected $_templates = array('notify_phone');
+    protected $_test_value = '94777123456';
+    public function __construct(){
+        parent::__construct();
+        $this->_nicename = __( 'Phone Number - Notify.Lk', 'ninja-forms' );
+    }
+}
+
+
+add_filter('ninja_forms_register_fields', function($fields){
+	$fields['notify_ninja_phone'] = new NotifyNinjaPhoneField;
+	return $fields;
+});
+
+add_action( 'wp_enqueue_scripts', 'theme_enqueue_styles' );
+    function theme_enqueue_styles() {
+        wp_enqueue_style( 'intlTelInput', plugins_url( 'includes/css/intlTelInput.css', __FILE__ ) );
+        wp_enqueue_style( 'notify-ninja', plugins_url( 'includes/css/main.css', __FILE__ ) );
+		
+		wp_enqueue_script('intlTelInput', plugins_url( 'includes/js/intlTelInput.min.js' , __FILE__ ), array('jquery'), FALSE, TRUE);
+		wp_enqueue_script('notify-ninja', plugins_url( 'includes/js/main.js' , __FILE__ ), array('jquery', 'intlTelInput'), FALSE, TRUE);
+    }
+
