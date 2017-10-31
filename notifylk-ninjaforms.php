@@ -29,38 +29,51 @@ function notifyNinjaAfterSubmission($form_data) {
 
     $settings = array(
 	'phone_number_field' => get_option('notify_ninja_key_phone'),
+	'fname_field' => get_option('notify_ninja_key_fname'),
 	'message' => get_option('notify_ninja_message'),
 	'user_id' => get_option('notify_ninja_userid'),
 	'api_key' => get_option('notify_ninja_apikey'),
 	'sender_id' => get_option('notify_ninja_senderid'),
+	'group_id' => get_option('notify_ninja_groupid'),
     );
-
 
     preg_match_all("/\[(.+?)\]/", $settings['message'], $shortcodes);
     $shortcodes_to_replace = $shortcodes[0];
     $form_fields = array();
 
     foreach ($form_data['fields'] as $field) { // Field settigns, including the field key and value.
-	$form_fields[$field['key']] = $field['value']; // Update the submitted field value.
+		$form_fields[$field['key']] = $field['value']; // Update the submitted field value.
     }
+	
+	if(!$settings['phone_number_field']  || !isset($form_fields[$settings['phone_number_field']]))
+		return;
 
     $values_to_replace = array();
     foreach ($shortcodes[1] as $key) {
-	array_push($values_to_replace, $form_fields[$key]);
+		array_push($values_to_replace, $form_fields[$key]);
     }
 
     $message = str_replace($shortcodes_to_replace, $values_to_replace, $settings['message']);
-    $phone_num = $form_fields[$settings['phone_number_field']];
+    
+	$phone_num = $form_fields[$settings['phone_number_field']];	
 	
+	$fname = null;
 	
+	if($settings['fname_field'] && isset($form_fields[$settings['fname_field']]))
+		$fname = $form_fields[$settings['fname_field']];	
+	
+	$contact_group = null;
+	
+	if(!empty($settings['group_id']))
+		$contact_group = $settings['group_id'];
 	
     $phone_num = notifyReformatPhoneNumbers($phone_num);
 
     $apiInt = new \NotifyLk\Api\SmsApi();
 	try{
-		$apiInt->sendSMS($settings['user_id'], $settings['api_key'], $message, $phone_num, $settings['sender_id']);
+		$apiInt->sendSMS($settings['user_id'], $settings['api_key'], $message, $phone_num, $settings['sender_id'], $fname, null, null, null, $contact_group);
 	}catch(Exception $e){
-		echo "Please enter a valid phone number.";
+		
 	}
     
 }
