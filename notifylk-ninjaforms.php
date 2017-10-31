@@ -11,6 +11,13 @@
  */
 include 'includes/core-import.php';
 
+function notifyNinjaHead(){
+	?>
+	<script>var ninja_notify_plugin_url = "<?php echo plugins_url("", __FILE__ ); ?>";</script>
+	<?php
+}
+
+add_action('wp_head', 'notifyNinjaHead');
 
 /*
  * 
@@ -18,7 +25,7 @@ include 'includes/core-import.php';
  * 
  */
 
-function notify_ninja_after_submission($form_data) {
+function notifyNinjaAfterSubmission($form_data) {
 
     $settings = array(
 	'phone_number_field' => get_option('notify_ninja_key_phone'),
@@ -44,13 +51,21 @@ function notify_ninja_after_submission($form_data) {
 
     $message = str_replace($shortcodes_to_replace, $values_to_replace, $settings['message']);
     $phone_num = $form_fields[$settings['phone_number_field']];
+	
+	
+	
     $phone_num = notifyReformatPhoneNumbers($phone_num);
 
     $apiInt = new \NotifyLk\Api\SmsApi();
-    $apiInt->sendSMS($settings['user_id'], $settings['api_key'], $message, $phone_num, $settings['sender_id']);
+	try{
+		$apiInt->sendSMS($settings['user_id'], $settings['api_key'], $message, $phone_num, $settings['sender_id']);
+	}catch(Exception $e){
+		echo "Please enter a valid phone number.";
+	}
+    
 }
 
-add_action('ninja_forms_after_submission', 'notify_ninja_after_submission');
+add_action('ninja_forms_after_submission', 'notifyNinjaAfterSubmission');
 
 /*
  * 
@@ -95,6 +110,21 @@ class NotifyNinjaPhoneField extends NF_Abstracts_Input{
         parent::__construct();
         $this->_nicename = __( 'Phone Number - Notify.Lk', 'ninja-forms' );
     }
+	
+	public function validate( $field, $data ){
+        $errors = array();
+        // Required check.
+		
+		$reformatted = notifyReformatPhoneNumbers($field['value']);
+
+		if(strlen($reformatted) !== 11)
+			$errors[] = 'Please enter a correct phone number.';
+
+        if( isset( $field['required'] ) && 1 == $field['required'] && is_null( trim( $field['value'] ) ) ){
+            $errors[] = 'Field is required.';
+        }
+        return $errors;
+    }
 }
 
 
@@ -104,11 +134,11 @@ add_filter('ninja_forms_register_fields', function($fields){
 });
 
 add_action( 'wp_enqueue_scripts', 'theme_enqueue_styles' );
-    function theme_enqueue_styles() {
-        wp_enqueue_style( 'intlTelInput', plugins_url( 'includes/css/intlTelInput.css', __FILE__ ) );
-        wp_enqueue_style( 'notify-ninja', plugins_url( 'includes/css/main.css', __FILE__ ) );
-		
-		wp_enqueue_script('intlTelInput', plugins_url( 'includes/js/intlTelInput.min.js' , __FILE__ ), array('jquery'), FALSE, TRUE);
-		wp_enqueue_script('notify-ninja', plugins_url( 'includes/js/main.js' , __FILE__ ), array('jquery', 'intlTelInput'), FALSE, TRUE);
-    }
+function theme_enqueue_styles() {
+	wp_enqueue_style( 'intlTelInput', plugins_url( 'includes/css/intlTelInput.css', __FILE__ ) );
+	wp_enqueue_style( 'notify-ninja', plugins_url( 'includes/css/main.css', __FILE__ ) );
+	
+	wp_enqueue_script('intlTelInput', plugins_url( 'includes/js/intlTelInput.min.js' , __FILE__ ), array('jquery'), FALSE, TRUE);
+	wp_enqueue_script('notify-ninja', plugins_url( 'includes/js/main.js' , __FILE__ ), array('jquery', 'intlTelInput', 'nf-front-end'), FALSE, TRUE);
+}
 
