@@ -5,7 +5,7 @@
  */
 
 if(!class_exists('\NotifyLk\Api\SmsApi'))
-	require 'php-sdk/autoload.php';
+	include 'php-sdk/autoload.php';
 
-require 'options.php';
+include 'gen-options.php';
 
