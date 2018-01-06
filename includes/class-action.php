@@ -123,10 +123,17 @@ class NF_Actions_Notifylk extends NF_Abstracts_Action {
 
 	$apiInt = new \NotifyLk\Api\SmsApi();
 	try {
-	    $apiInt->sendSMS($settings['user_id'], $settings['api_key'], $message, $phone_num, $settings['sender_id'], $fname, $lname, null, null, $contact_group);
+	    $return = $apiInt->sendSMS($settings['user_id'], $settings['api_key'], $message, $phone_num, $settings['sender_id'], $fname, $lname, null, null, $contact_group);
 	} catch (Exception $e) {
-	    
+	    $log = fopen(trailingslashit(dirname(__FILE__)) . "log.txt", "r+");
+	    if (!$log)
+		return $data;
+	    $e_m = date("Y-m-d H:i:s"). ": ".$e->getMessage() . "\n";
+	    fwrite($log, $e_m);
+	    fclose($log);
 	}
+
+
 	return $data;
     }
 

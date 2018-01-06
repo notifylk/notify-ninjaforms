@@ -35,17 +35,28 @@ function notify_ninja_options_page() {
     		<th scope="row">Notify.Lk Sender ID</th>
     		<td><input type="text" class="regular-text" name="notify_ninja_senderid" value="<?php echo esc_attr(get_option('notify_ninja_senderid')); ?>" /></td>
     	    </tr>
-	 	    
-	    <tr>
-		<td colspan="2">
-		    
-		</td>
-	    </tr>
+
+    	    <tr>
+    		<td colspan="2">
+
+    		</td>
+    	    </tr>
     	</table>
 
 	    <?php submit_button(); ?>
 
         </form>
+
+        <div class="log_viewer">
+    	<div>
+	    <textarea style="width:100%;" rows="8"><?php
+		$log = fopen(trailingslashit(dirname(__FILE__)) . "log.txt", "r");
+		echo fread($log, filesize(trailingslashit(dirname(__FILE__))));
+		fclose($log);
+		?></textarea>
+		
+    	</div>
+        </div>
     </div>
     <?php
 }
