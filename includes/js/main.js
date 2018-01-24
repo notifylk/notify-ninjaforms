@@ -1,5 +1,4 @@
 jQuery(function($){
-	console.log("yaa");
 	setTimeout(function(){
 		jQuery(".notify_ninja_phone_field").intlTelInput({
 			initialCountry: "auto",
@@ -23,7 +22,7 @@ jQuery(function($){
 
 
 // Create a new object for custom validation of a custom field.
-var myCustomFieldController = Marionette.Object.extend( {
+var NotifyNinjaFieldController = Marionette.Object.extend( {
     initialize: function() {
 
         // On the Form Submission's field validaiton...
@@ -55,5 +54,5 @@ var myCustomFieldController = Marionette.Object.extend( {
 jQuery( document ).ready( function( $ ) {
 
     // Instantiate our custom field's controller, defined above.
-    new myCustomFieldController();
+    new NotifyNinjaFieldController();
 });
