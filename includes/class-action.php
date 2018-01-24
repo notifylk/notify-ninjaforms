@@ -28,7 +28,7 @@ class NF_Actions_Notifylk extends NF_Abstracts_Action {
     public function __construct() {
 	parent::__construct();
 
-	$this->_nicename = __('Notify.LK Contact Submission', 'ninja-forms');
+	$this->_nicename = __('Notify.LK SMS', 'ninja-forms');
 
 	$settings = array(
 	    'phone_num' => array(
